@@ -1,13 +1,12 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class HeroKnight : MonoBehaviour {
 
     [SerializeField] float      m_speed = 5.0f;
     [SerializeField] float      m_jumpForce = 7.5f;
-    [SerializeField] float      m_rollForce = 6.0f;
+    //[SerializeField] float      m_rollForce = 6.0f;
     [SerializeField] bool       m_noBlood = false;
-    [SerializeField] GameObject m_slideDust;
+    //[SerializeField] GameObject m_slideDust;
 
     private Animator            m_animator;
     private Rigidbody2D         m_body2d;
@@ -96,6 +95,7 @@ public class HeroKnight : MonoBehaviour {
         //m_animator.SetBool("WallSlide", m_isWallSliding);
 
         //Death
+
         if (Input.GetKeyDown("e") && !m_rolling)
         {
             m_animator.SetBool("noBlood", m_noBlood);
@@ -192,4 +192,64 @@ public class HeroKnight : MonoBehaviour {
     //        dust.transform.localScale = new Vector3(m_facingDirection, 1, 1);
     //    }
     //}
+    public void MoveLeft()
+    {
+        float inputX = -1.0f; // Set horizontal input to move left
+        m_body2d.velocity = new Vector2(inputX * m_speed, m_body2d.velocity.y);
+
+        // Swap direction of sprite to face left
+        GetComponent<SpriteRenderer>().flipX = true;
+        m_facingDirection = -1;
+    }
+
+    public void MoveRight()
+    {
+        float inputX = 1.0f; // Set horizontal input to move right
+        m_body2d.velocity = new Vector2(inputX * m_speed, m_body2d.velocity.y);
+
+        // Swap direction of sprite to face right
+        GetComponent<SpriteRenderer>().flipX = false;
+        m_facingDirection = 1;
+    }
+
+    public void Jump()
+    {
+        if (m_grounded && !m_rolling)
+        {
+            m_animator.SetTrigger("Jump");
+            m_grounded = false;
+            m_animator.SetBool("Grounded", m_grounded);
+            m_body2d.velocity = new Vector2(m_body2d.velocity.x, m_jumpForce);
+            m_groundSensor.Disable(0.2f);
+        }
+    }
+
+    public void Attack()
+    {
+        if (m_timeSinceAttack > 0.25f && !m_rolling)
+        {
+            m_currentAttack++;
+
+            // Loop back to one after third attack
+            if (m_currentAttack > 3)
+                m_currentAttack = 1;
+
+            // Reset Attack combo if time since last attack is too large
+            if (m_timeSinceAttack > 1.0f)
+                m_currentAttack = 1;
+
+            // Call one of three attack animations "Attack1", "Attack2", "Attack3"
+            m_animator.SetTrigger("Attack" + m_currentAttack);
+
+            // Reset timer
+            m_timeSinceAttack = 0.0f;
+        }
+    }
+
+    public void Block()
+    {
+        m_animator.SetTrigger("Block");
+        m_animator.SetBool("IdleBlock", true);
+        m_animator.SetBool("IdleBlock", false);
+    }
 }

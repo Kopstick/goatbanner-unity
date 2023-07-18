@@ -4,21 +4,18 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class LevelSelector : MonoBehaviour
 {
-    
-    // Start is called before the first frame update
-    void Start()
+    public void Village()
     {
-        
+        SceneManager.LoadScene("Village");
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Forest()
     {
-        
+        SceneManager.LoadScene("Forest");
     }
 
-    public void OpenScene()
+    public void Castle()
     {
-        
+        SceneManager.LoadScene("Castle");
     }
 }
